@@ -1,0 +1,2 @@
+prefect-docker>=0.2.2
+prefect-kubernetes>=0.2.6

@@ -1,0 +1,12 @@
+deployments:
+- name: "hello-remote"
+  tags:
+    - "remote"
+    - "{{ image_tag }}"
+  entrypoint: "flows/hello.py:hello"
+  parameters:
+    name: "Ford"
+  work_pool:
+    name: "kubernetes"
+    job_variables:
+      image: "{{ image_name }}"
