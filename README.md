@@ -2,6 +2,13 @@
 
 This repo provides an overview of the Prefect Kubernetes worker and how to use it. Some parts are specific to AWS, but the concepts should transfer to all major cloud providers.
 
+## Resources
+
+- [Introducing Prefect Workers and Projects](https://www.prefect.io/guide/blog/introducing-prefect-workers-and-projects/)
+- [Worker Helm Chart](https://github.com/PrefectHQ/prefect-helm/tree/main/charts/prefect-worker#prefect-worker)
+- [Projects Documentation](https://docs.prefect.io/latest/concepts/projects/)
+- [Worker Pools Documentation](https://docs.prefect.io/latest/concepts/work-pools/)
+
 ## Create a cluster
 
 Let's start by creating a new cluster. If you already have one, skip ahead to the next section. We'll use EKS backed by FARGATE,
