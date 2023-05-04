@@ -1,12 +1,29 @@
-deployments:
-- name: "hello-remote"
-  tags:
+definitions:
+  tags: &common_tags
     - "remote"
-    - "{{ image_tag }}"
+    - "eks"
+  job_variables: &common_job_variables
+    image: "{{ image_name }}"
+
+
+deployments:
+- name: "ford"
+  tags: *common_tags
   entrypoint: "flows/hello.py:hello"
   parameters:
     name: "Ford"
   work_pool:
     name: "kubernetes"
+    job_variables: *common_job_variables
+
+- name: "arthur"
+  tags: *common_tags
+  entrypoint: "flows/hello.py:hello"
+  parameters:
+    name: "Arthur"
+  work_pool:
+    name: "kubernetes"
     job_variables:
-      image: "{{ image_name }}"
+      <<: *common_job_variables
+      env:
+        FOO: "BAR"
