@@ -2,6 +2,7 @@ definitions:
   tags: &common_tags
     - "remote"
     - "eks"
+    - "{{ current_sha }}"
   job_variables: &common_job_variables
     image: "{{ image_name }}"
 

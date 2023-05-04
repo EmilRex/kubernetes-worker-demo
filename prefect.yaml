@@ -6,12 +6,12 @@ prefect-version: 2.10.6
 
 # build section allows you to manage and build docker images
 build:
-# TODO: https://github.com/PrefectHQ/prefect/issues/9346
-# - steps.get_current_sha: {}
+- steps.get_current_sha: {}
 - prefect_docker.projects.steps.build_docker_image:
     # TODO: https://github.com/PrefectHQ/prefect-docker/issues/46
     requires: git+https://github.com/EmilRex/prefect-docker.git
     image_name: "{{ prefect.variables.image_name }}"
+    # TODO: https://github.com/PrefectHQ/prefect/issues/9346
     # tag: "{{ current_sha }}"
     tag: latest
     dockerfile: auto
