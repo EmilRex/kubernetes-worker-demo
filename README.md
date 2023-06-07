@@ -127,5 +127,5 @@ prefect deploy --all --ci
 
 prefect deployment run hello/default
 prefect deployment run hello/arthur
-prefect deployment run hello-parallel/parallel
+prefect deployment run hello-parallel/default
 ```

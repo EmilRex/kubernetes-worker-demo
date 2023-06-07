@@ -22,8 +22,8 @@ def say_hello_parallel(name: str):
 
 
 @flow
-def hello_parallel():
-    for name in NAMES:
+def hello_parallel(names: list = NAMES):
+    for name in names:
         say_hello_parallel.submit(name)
 
 
