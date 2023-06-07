@@ -3,28 +3,26 @@ definitions:
     - "remote"
     - "eks"
     - "{{ get-commit-hash.stdout }}"
-  job_variables: &common_job_variables
-    image: "{{ image }}"
+  work_pool: &common_work_pool
+    name: "kubernetes"
+    job_variables:
+      image: "{{ image }}"
 
 
 deployments:
-- name: "ford"
+- name: "default"
   tags: *common_tags
   entrypoint: "flows/hello.py:hello"
-  parameters:
-    name: "Ford"
-  work_pool:
-    name: "kubernetes"
-    job_variables: *common_job_variables
+  work_pool: *common_work_pool
 
 - name: "arthur"
   tags: *common_tags
   entrypoint: "flows/hello.py:hello"
   parameters:
     name: "Arthur"
-  work_pool:
-    name: "kubernetes"
-    job_variables:
-      <<: *common_job_variables
-      env:
-        FOO: "BAR"
+  work_pool: *common_work_pool
+
+- name: "parallel"
+  tags: *common_tags
+  entrypoint: "flows/hello.py:hello_parallel"
+  work_pool: *common_work_pool

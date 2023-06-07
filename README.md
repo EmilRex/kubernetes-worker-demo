@@ -125,6 +125,7 @@ At last we can deploy our flows and run them. The deploy command will actually b
 ```bash
 prefect deploy --all --ci
 
-prefect deployment run hello/ford
+prefect deployment run hello/default
 prefect deployment run hello/arthur
+prefect deployment run hello-parallel/parallel
 ```
