@@ -88,7 +88,6 @@ worker:
     accountId: "<YOUR-ACCOUNT-ID>"
     workspaceId: "<YOUR-WORKSPACE-ID>"
   config:
-    http2: false
     workPool: "kubernetes"
 ```
 
@@ -124,7 +123,7 @@ We could hardcode the image name our `prefect.yaml` file, but for the sake of de
 At last we can deploy our flows and run them. The deploy command will actually build the images and push them to our remote repository.
 
 ```bash
-prefect deploy --all
+prefect deploy --all --ci
 
 prefect deployment run hello/ford
 prefect deployment run hello/arthur

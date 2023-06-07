@@ -2,9 +2,9 @@ definitions:
   tags: &common_tags
     - "remote"
     - "eks"
-    - "{{ current_sha }}"
+    - "{{ get-commit-hash.stdout }}"
   job_variables: &common_job_variables
-    image: "{{ image_name }}"
+    image: "{{ image }}"
 
 
 deployments:

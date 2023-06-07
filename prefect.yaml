@@ -2,18 +2,21 @@
 
 # Generic metadata about this project
 name: kubernetes-worker-demo
-prefect-version: 2.10.6
+prefect-version: 2.10.12
 
 # build section allows you to manage and build docker images
+# TODO: Uses unreleased changes that requires installing from main:
+#     pip install git+https://github.com/PrefectHQ/prefect.git
+#     pip install git+https://github.com/PrefectHQ/prefect-docker.git
 build:
-- steps.get_current_sha: {}
+- prefect.projects.steps.run_shell_script:
+    id: get-commit-hash
+    script: git rev-parse --short HEAD
+    stream_output: false
 - prefect_docker.projects.steps.build_docker_image:
-    # TODO: https://github.com/PrefectHQ/prefect-docker/issues/46
-    requires: git+https://github.com/EmilRex/prefect-docker.git
+    requires: prefect-docker
     image_name: "{{ prefect.variables.image_name }}"
-    # TODO: https://github.com/PrefectHQ/prefect/issues/9346
-    # tag: "{{ current_sha }}"
-    tag: latest
+    tag: "{{ get-commit-hash.stdout }}"
     dockerfile: auto
     push: true
     platform: "linux/amd64"
