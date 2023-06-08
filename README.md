@@ -107,7 +107,7 @@ We'll want a remote image repository to store any custom images we build. If you
 
 ```bash
 # Create a repo unless you already have one you wish to use
-aws ecr create-repository --repository-name custom-worker-image
+aws ecr create-repository --repository-name custom-flow-image
 
 # Login to ECR
 # Replace the region and account ID with your own values
@@ -116,7 +116,7 @@ aws ecr get-login-password --region $REGION | docker login --username AWS --pass
 
 ## Create a variable
 
-We could hardcode the image name our `prefect.yaml` file, but for the sake of demonstration and security, let's use a Prefect variable. Go to the variables page in the UI, set `Name` to `image_name`, and set `Value` to `$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/custom-worker-image` or equivalent.
+We could hardcode the image name our `prefect.yaml` file, but for the sake of demonstration and security, let's use a Prefect variable. Go to the variables page in the UI, set `Name` to `image_name`, and set `Value` to `$AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/custom-flow-image` or equivalent.
 
 ## Deploy and run
 
