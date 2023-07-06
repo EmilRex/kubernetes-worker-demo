@@ -1,0 +1,49 @@
+name: Deploy all Prefect flows
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-2
+  PYTHON_VERSION: 3.9
+  PREFECT_WORKSPACE: "sales-engineering/kubernetes-worker-demo"
+
+jobs:
+  deploy_flow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Authenticate with AWS for ECR access
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Configure Python and authenticate with Prefect
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Authenticate with Prefect
+        run: |
+          prefect cloud login --key ${{ secrets.PREFECT_API_KEY }} --workspace ${{ env.PREFECT_WORKSPACE }}
+
+      # Deploy
+      - name: Deploy flows
+        run: |
+          prefect --no-prompt deploy --all
