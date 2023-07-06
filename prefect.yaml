@@ -1,30 +1,66 @@
-# File for configuring project / deployment build, push and pull steps
+# Welcome to your prefect.yaml file! You can you this file for storing and managing
+# configuration for deploying your flows. We recommend committing this file to source
+# control along with your flow code.
 
 # Generic metadata about this project
 name: kubernetes-worker-demo
-prefect-version: 2.10.12
+prefect-version: 2.10.19
 
 # build section allows you to manage and build docker images
-# TODO: Uses unreleased changes that requires installing from main:
-#     pip install git+https://github.com/PrefectHQ/prefect.git
-#     pip install git+https://github.com/PrefectHQ/prefect-docker.git
 build:
-- prefect.projects.steps.run_shell_script:
+- prefect.deployments.steps.run_shell_script:
     id: get-commit-hash
     script: git rev-parse --short HEAD
     stream_output: false
-- prefect_docker.projects.steps.build_docker_image:
-    requires: prefect-docker
+- prefect_docker.deployments.steps.build_docker_image:
+    id: build-image
+    requires: prefect-docker>=0.3.1
     image_name: "{{ prefect.variables.image_name }}"
     tag: "{{ get-commit-hash.stdout }}"
     dockerfile: auto
-    push: true
     platform: "linux/amd64"
 
 # push section allows you to manage if and how this project is uploaded to remote locations
-push: null
+push:
+- prefect_docker.deployments.steps.push_docker_image:
+    requires: prefect-docker>=0.3.1
+    image_name: '{{ build-image.image_name }}'
+    tag: '{{ build-image.tag }}'
 
 # pull section allows you to provide instructions for cloning this project in remote locations
 pull:
-- prefect.projects.steps.set_working_directory:
+- prefect.deployments.steps.set_working_directory:
     directory: /opt/prefect/kubernetes-worker-demo
+
+# the definitions section allows you to define reusable components for your deployments
+definitions:
+  tags: &common_tags
+    - "remote"
+    - "eks"
+    - "{{ get-commit-hash.stdout }}"
+  work_pool: &common_work_pool
+    name: "kubernetes"
+    job_variables:
+      image: "{{ build-image.image }}"
+
+# the deployments section allows you to provide configuration for deploying flows
+deployments:
+- name: "default"
+  tags: *common_tags
+  schedule: null
+  entrypoint: "flows/hello.py:hello"
+  work_pool: *common_work_pool
+
+- name: "arthur"
+  tags: *common_tags
+  schedule: null
+  entrypoint: "flows/hello.py:hello"
+  parameters:
+    name: "Arthur"
+  work_pool: *common_work_pool
+
+- name: "default"
+  tags: *common_tags
+  schedule: null
+  entrypoint: "flows/hello.py:hello_parallel"
+  work_pool: *common_work_pool
