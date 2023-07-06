@@ -2,6 +2,12 @@
 
 This repo provides an overview of the Prefect Kubernetes worker and how to use it. Some parts are specific to AWS, but the concepts should transfer to all major cloud providers.
 
+## Requirements
+
+* AWS account
+* Prefect Cloud account
+* GitHub account
+
 ## Resources
 
 - [Introducing Prefect Workers and Projects](https://www.prefect.io/guide/blog/introducing-prefect-workers-and-projects/)
@@ -123,9 +129,47 @@ We could hardcode the image name our `prefect.yaml` file, but for the sake of de
 At last we can deploy our flows and run them. The deploy command will actually build the images and push them to our remote repository.
 
 ```bash
-prefect deploy --all --ci
+prefect deploy --all
 
 prefect deployment run hello/default
 prefect deployment run hello/arthur
 prefect deployment run hello-parallel/default
 ```
+
+## Configure GitHub Actions
+
+We can configure GitHub Actions to build our images and deploy our flows on every push to main. To do so we'll create an IAM user for GitHub to use when pushing images to ECR,
+
+```bash
+IAM_USER_NAME=github-actions-deploy
+
+aws iam create-user --user-name $IAM_USER_NAME
+
+cat <<EOF > policy.json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:PutImage",
+        "ecr:InitiateLayerUpload",
+        "ecr:UploadLayerPart",
+        "ecr:CompleteLayerUpload"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+
+aws iam put-user-policy --user-name $IAM_USER_NAME --policy-name allow-push-ecr --policy-document file://policy.json
+
+aws iam create-access-key --user-name $IAM_USER_NAME
+```
+
+Then set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `PREFECT_API_KEY` as GitHub secrets.
